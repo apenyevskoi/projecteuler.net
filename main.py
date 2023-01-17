@@ -7,5 +7,10 @@ def problem1():
                  textoutput.BOLD_UNDERLINE + str(sum([ num for num in range(1,1000,1) if (num % 3 == 0) or (num % 5 == 0) ])))
 
 
+def problem2():
+    pass
+
+
 if __name__ == '__main__':
     problem1()
+    problem2()
