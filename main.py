@@ -58,7 +58,7 @@ def problem4():
 
 
 if __name__ == '__main__':
-    # problem1()
-    # problem2()
-    # findPrimeFactors( 600851475143 )
-    # problem4()
+    problem1()
+    problem2()
+    findPrimeFactors( 600851475143 )
+    problem4()
