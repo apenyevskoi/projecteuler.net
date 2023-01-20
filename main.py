@@ -38,7 +38,6 @@ def findPrimeFactors(num):
            )
     return primeFactors
 
-
 def problem4():
     rng1 = list(range(100,1000,1))
     rng2 = list(range(100,1000,1))
@@ -56,7 +55,6 @@ def problem4():
           str(max(palindromic.keys())), '=', str(palindromic[max(palindromic.keys())][0]), 'x',
           str(palindromic[max(palindromic.keys())][1]) +
           textoutput.END)
-
 
 def problem7(rng):
     primeLst = []
@@ -77,7 +75,6 @@ def problem7(rng):
                    str(primeLst[10001-1]) +
                    textoutput.END )
             return True
-
 
 def problem26():
     def get_key(d, value):
@@ -127,5 +124,6 @@ if __name__ == '__main__':
     # problem2()
     # findPrimeFactors( 600851475143 )
     # problem4()
+    # time-spending task
     # problem7(150000)
     problem26()
