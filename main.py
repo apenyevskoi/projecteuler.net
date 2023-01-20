@@ -1,3 +1,4 @@
+import re
 class textoutput:
     BOLD_UNDERLINE = '\033[1m' + '\033[4m'
     END = '\033[0m'
@@ -57,8 +58,74 @@ def problem4():
           textoutput.END)
 
 
+def problem7(rng):
+    primeLst = []
+    tmpLst = []
+    test = 1
+    for i in range(0, rng+1, 1):
+        while i >= test:
+            if i % test == 0:
+                tmpLst.append(test)
+            test += 1
+        if len(tmpLst) == 2:
+            primeLst.append(i)
+        test = 1
+        tmpLst = []
+        if len(primeLst) == 10010:
+            print( 'problem 7: prime number, which has index = 10001, is',
+                   textoutput.BOLD_UNDERLINE +
+                   str(primeLst[10001-1]) +
+                   textoutput.END )
+            return True
+
+
+def problem26():
+    def get_key(d, value):
+        for k,v in d.items():
+            if v == value:
+                return k
+
+    fractionDict = {}
+    saved1 = []
+    saved2 = []
+    for d in range(2,1001,1):
+        fraction = str(1/d).split('.')[1]
+        if len(fraction) <= 4:
+            pass
+        else:
+            if fraction.count(fraction[0]) == 16:
+                #fractionDict[d] = fraction[0]  # length 1
+                fractionDict[d] = 1
+            elif fraction.count(fraction[1]) >= 15:
+                fractionDict[d] = 1
+                # fractionDict[d] = fraction[1]   # length 1
+            elif fraction.count(fraction[3]) >= 15:
+                fractionDict[d] = 1
+                # fractionDict[d] = fraction[3]  # length 1
+            elif fraction.count(fraction[4]) >= 14:
+                fractionDict[d] = 1
+                # fractionDict[d] = fraction[4]  # length 1
+            else:
+                # define recurring value
+                # define length of recurring value
+                if len(fraction.split( fraction[0] )) > 2:
+                    if fraction.split(fraction[0])[1] == fraction.split(fraction[0])[2]:
+                        fractionDict[d] = len(fraction[0] + fraction.split( fraction[0] )[1])
+                if len(fraction.split( fraction[1] )) > 2:
+                    if fraction.split(fraction[1])[1] == fraction.split(fraction[1])[2]:
+                        #print(d, fraction.split( fraction[1] ))
+                        fractionDict[d] = len(fraction[1] + fraction.split( fraction[1] )[1])
+
+    print( 'problem 26: value of d which 1/d contains the longest recurring cycle is',
+           textoutput.BOLD_UNDERLINE +
+           str(get_key( fractionDict, max( fractionDict.values( ) ) )) +
+           textoutput.END )
+
+
 if __name__ == '__main__':
-    problem1()
-    problem2()
-    findPrimeFactors( 600851475143 )
-    problem4()
+    # problem1()
+    # problem2()
+    # findPrimeFactors( 600851475143 )
+    # problem4()
+    # problem7(150000)
+    problem26()
