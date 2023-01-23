@@ -118,6 +118,105 @@ def problem26():
            str(get_key( fractionDict, max( fractionDict.values( ) ) )) +
            textoutput.END )
 
+#   ['*', '*', '*']
+#   ['*', '*', ' ', '*']
+#   ['*', ' ', '*', '*']
+def problem78_recurtion(circles, i, iter, trigger):
+    if iter == len(circles)+1:
+        # print(circles)
+        return circles.count('*'), iter+1
+    if circles[len(circles) - i - 1] == '*' and  circles[len(circles) - i] == '*':
+        circles = circles[0:len(circles) - i] + [' '] + circles[len(circles) - i: len(circles)]
+        iter += 1
+        if iter == len( circles )-1:
+            # print(circles)
+            return circles.count('*'), iter
+        # print(circles, iter, i, 'two circles')
+        return problem78_recurtion(circles, i, iter, trigger)
+    elif circles[len(circles) - i - 1] == ' ' and circles[len(circles) - i] == '*' and circles[len(circles) - i-3] == '*' and trigger[0] == 0:
+        circles[len( circles ) - i - 1] = '*'
+        circles[len( circles ) - i - 2] = ' '
+        iter += 1
+        # print(circles, iter, i, 'space and circle')
+        if i > 1:
+            trigger[0] = 1
+            trigger[1] = i
+            i -= 2
+        return problem78_recurtion(circles, i, iter, trigger)
+    elif circles[len(circles) - i - 1] == ' ' and circles[len(circles) - i] == '*' and circles[len(circles) - i-3] == '*' and trigger[0] == 1:
+        circles = circles[0:len( circles ) - trigger[1]] + [' '] + circles[len(circles) - trigger[1]: len(circles)]
+        iter += 1
+        # print(circles, iter, i, 'space and circle and trigger[0] == 1')
+        trigger[0] = 0
+        trigger[1] = 1
+        if i > 1:
+            i = 1
+        return problem78_recurtion(circles, i, iter, trigger)
+    else:
+        if iter + 1 == len(circles):
+            # print(circles)
+            return circles.count('*'), iter+1
+        i += 1
+        if len( circles ) - i == 3:
+            circles = ['*'] + [' '] + circles[1: len( circles )]
+            # print(circles)
+            return circles.count('*'), iter+1
+        return problem78_recurtion(circles, i, iter, trigger)
+
+def problem78(circles):
+    rec = []
+    count = len(circles) - 1
+    flag = True
+    iter = 0
+    trigger = [0,1]
+    # print(circles)
+    while flag:
+        #print('iter', iter, len(circles), count)
+        if iter == len( circles ) + 2:
+            return circles.count('*'), iter + 1
+        if circles[count - 1] == '*' and circles[count] == '*':
+            circles = circles[:count] + [' '] + circles[count: len( circles )]
+            iter += 1
+            # print(circles, count,'**')
+            count += 2
+            if iter == len( circles ) - 2:
+                return circles.count('*'), iter + 1
+        elif circles[count - 3] == '*' and circles[count - 1] == ' ' and circles[count] == '*' and trigger[0] == 0:
+            if len(circles) - iter == 3:
+                circles = ['*'] + [' '] + circles[1: len( circles )]
+                # print( circles )
+                iter += 1
+                return circles.count('*'), iter + 1
+            else:
+                circles[count - 1] = '*'
+                circles[count - 2] = ' '
+                iter += 1
+                # print( circles, count, iter, ' here')
+            # if count > 1:
+            #     trigger[0] = 1
+            #     trigger[1] = count
+            #     count += 1
+            count += 1
+        # elif  circles[count - 3] == '*' and circles[count - 1] == ' ' and circles[count] == '*' and trigger[0] == 1:
+        #     circles = circles[0:len(circles) - trigger[1]] + [' '] + ['*'] + circles[len( circles ) - trigger[1]+2: len( circles )]
+        #     iter += 1
+        #     print(circles, count, 'trigger0=1')
+        #     trigger[0] = 0
+        #     trigger[1] = 1
+        #     count = len(circles) - 1
+        else:
+            pass
+            # if iter + 1 == len( circles ):
+            #     return circles, iter
+            # if len( circles ) - count == 3:
+            #     circles = ['*'] + [' '] + circles[1: len( circles )]
+            #     print(circles)
+            #     iter += 1
+            #     return circles, iter
+        count -= 1
+        if count == 0:
+            flag = False
+
 
 if __name__ == '__main__':
     # problem1()
@@ -126,4 +225,12 @@ if __name__ == '__main__':
     # problem4()
     # time-spending task
     # problem7(150000)
-    problem26()
+    # problem26()
+    print('problem78')
+    # countCircles = 100000
+    # iter = 0
+    # while iter < 50000:
+    #     countCircles += 1
+    #     circles, iter = problem78(countCircles * ['*'])
+    #     print(circles, iter)
+    # 1000000/1.9985
