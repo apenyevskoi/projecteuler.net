@@ -1,13 +1,25 @@
-import re
+import numpy as np
+from flask import Flask
+from flask_restful import Api, Resource, reqparse
+
+problemNums = range(1,5,1)
+
+
+class Problem(Resource):
+    def get(self, problem=0):
+        if problem == 0:
+            return problemTasks(int(np.random.choice(problemNums,1))), 200
+        if problem in problemNums:
+            return problemTasks(problem), 200
+        return print('Problem not found'), 404
+
 class textoutput:
     BOLD_UNDERLINE = '\033[1m' + '\033[4m'
     END = '\033[0m'
 
 def problem1():
-    return print('problem 1: sum of numbers below 1000 are multiples by 3 and 5 is',
-                 textoutput.BOLD_UNDERLINE +
-                 str(sum([ num for num in range(1,1000,1) if (num % 3 == 0) or (num % 5 == 0) ])) +
-                 textoutput.END)
+    return 'problem 1: sum of numbers below 1000 are multiple by 3 and 5 is ' + \
+                 str(sum([ num for num in range(1,1000,1) if (num % 3 == 0) or (num % 5 == 0) ]))
 
 def problem2():
     lst = [1, 2]
@@ -17,13 +29,15 @@ def problem2():
             lst.append(lst[num-1] + lst[num])
             num += 1
         else:
-            return print( 'problem 2: sum of Fibonacci elements which last element do not exceed 4mln is',
-                          textoutput.BOLD_UNDERLINE +
-                          str( sum(lst) ) + textoutput.END)
+            return 'problem 2: sum of Fibonacci elements which last element do not exceed 4mln is' + \
+                          textoutput.BOLD_UNDERLINE + \
+                          str( sum(lst) ) + textoutput.END
 
-def findPrimeFactors(num):
+def problem3():
     primeFactors = []
     test = 2
+    num = 100
+    orig = 100
     while test <= num:
         if (num % test == 0):
             primeFactors.append(test)
@@ -31,12 +45,9 @@ def findPrimeFactors(num):
             test = 2
         else:
             test += 1
-    print( 'problem 3: the largest prime factor of number 600851475143 is ',
-           textoutput.BOLD_UNDERLINE +
-           str(max(primeFactors)) +
-           textoutput.END
-           )
-    return primeFactors
+    return 'problem 3: the largest prime factor of number '+ str(orig)+ ' is ' + \
+           str(max(primeFactors))
+           #textoutput.END
 
 def problem4():
     rng1 = list(range(100,1000,1))
@@ -50,16 +61,15 @@ def problem4():
                 s2 = str(numStr)[3:6]
                 if int(s1) == int(s2[::-1]):
                     palindromic[numStr] = [num1,num2]
-    print('problem 4: the largest polindromic of 3-digit numbers is',
-          textoutput.BOLD_UNDERLINE +
-          str(max(palindromic.keys())), '=', str(palindromic[max(palindromic.keys())][0]), 'x',
-          str(palindromic[max(palindromic.keys())][1]) +
-          textoutput.END)
+    return 'problem 4: the largest polindromic of 3-digit numbers is ' + \
+          str(max(palindromic.keys())) + '=' + str(palindromic[max(palindromic.keys())][0]) + 'x' + \
+          str(palindromic[max(palindromic.keys())][1])
 
-def problem7(rng):
+def problem7():
     primeLst = []
     tmpLst = []
     test = 1
+    rng = 10
     for i in range(0, rng+1, 1):
         while i >= test:
             if i % test == 0:
@@ -118,9 +128,6 @@ def problem26():
            str(get_key( fractionDict, max( fractionDict.values( ) ) )) +
            textoutput.END )
 
-#   ['*', '*', '*']
-#   ['*', '*', ' ', '*']
-#   ['*', ' ', '*', '*']
 def problem78_recurtion(circles, i, iter, trigger):
     if iter == len(circles)+1:
         # print(circles)
@@ -218,7 +225,29 @@ def problem78(circles):
             flag = False
 
 
+def problem78_1():
+    table = np.zeros((3,3))
+    print( table )
+    y = table.shape[0]
+    x = table.shape[1]
+    i = table.shape[0] - 1
+    while i >= 0:
+        print(i)
+                        
+        i -= 1
+
+def problemTasks(n):
+    return eval('problem' + str(n) + '()')
+
+
+#FLASK REST
+app = Flask(__name__)
+api = Api(app)
+api.add_resource(Problem, '/<int:problem>')
 if __name__ == '__main__':
+    app.run(debug=True, port=80)
+
+# if __name__ == '__main__':
     # problem1()
     # problem2()
     # findPrimeFactors( 600851475143 )
@@ -226,11 +255,4 @@ if __name__ == '__main__':
     # time-spending task
     # problem7(150000)
     # problem26()
-    print('problem78')
-    # countCircles = 100000
-    # iter = 0
-    # while iter < 50000:
-    #     countCircles += 1
-    #     circles, iter = problem78(countCircles * ['*'])
-    #     print(circles, iter)
-    # 1000000/1.9985
+    # problem78_1()
