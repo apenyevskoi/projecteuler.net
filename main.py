@@ -1,8 +1,13 @@
+import time
 import numpy as np
+import datetime as dt
 from flask import Flask
+import matplotlib.pyplot as plt
 from flask_restful import Api, Resource, reqparse
 
-problemNums = range(1,5,1)
+
+
+problemNums = range(1,100,1)
 
 
 class Problem(Resource):
@@ -33,11 +38,11 @@ def problem2():
                           textoutput.BOLD_UNDERLINE + \
                           str( sum(lst) ) + textoutput.END
 
-def problem3():
+def problem3(num):
     primeFactors = []
     test = 2
-    num = 100
-    orig = 100
+    #num = 100
+    orig = num
     while test <= num:
         if (num % test == 0):
             primeFactors.append(test)
@@ -46,7 +51,7 @@ def problem3():
         else:
             test += 1
     return 'problem 3: the largest prime factor of number '+ str(orig)+ ' is ' + \
-           str(max(primeFactors))
+           str(max(primeFactors)) + ' ' + str(primeFactors)
            #textoutput.END
 
 def problem4():
@@ -65,26 +70,56 @@ def problem4():
           str(max(palindromic.keys())) + '=' + str(palindromic[max(palindromic.keys())][0]) + 'x' + \
           str(palindromic[max(palindromic.keys())][1])
 
+# def problem7():
+#     primeLst = []
+#     tmpLst = []
+#     test = 1
+#     rng = 1000000
+#     for i in range(0, rng+1, 1):
+#         while i >= test:
+#             if i % test == 0:
+#                 tmpLst.append(test)
+#             test += 1
+#         if len(tmpLst) == 2:
+#             primeLst.append(i)
+#         test = 1
+#         tmpLst = []
+#         if len(primeLst) == 10010:
+#             return 'problem 7: prime number, which has index = 10001, is' + str( primeLst[10001 - 1] )
+
 def problem7():
-    primeLst = []
-    tmpLst = []
-    test = 1
-    rng = 10
-    for i in range(0, rng+1, 1):
-        while i >= test:
-            if i % test == 0:
-                tmpLst.append(test)
-            test += 1
-        if len(tmpLst) == 2:
-            primeLst.append(i)
-        test = 1
-        tmpLst = []
-        if len(primeLst) == 10010:
-            print( 'problem 7: prime number, which has index = 10001, is',
-                   textoutput.BOLD_UNDERLINE +
-                   str(primeLst[10001-1]) +
-                   textoutput.END )
-            return True
+    num = 120000
+    prime = list( range( 1, num + 1 ) )
+    mod = 2
+    tmp = []
+    index = 0
+    while mod**2 < max(prime):
+        for i in prime:
+            if i % mod != 0 or i == mod:
+                tmp.append( i )
+        prime = tmp
+        tmp = []
+        index += 1
+        mod = prime[index]
+    return 'Problem 7: prime number with index 10001 is ' + str(prime[10001])
+
+
+def problem19():
+    #import datetime
+    date0 = dt.datetime(year=1901, month=1, day=1)
+    date000 = dt.datetime(year=2000, month=12, day=31)
+    dateLst = []
+    day = 0
+    dateN = dt.datetime.today()
+    count = 0
+    while dateN != date0:
+        dateN = date000 - dt.timedelta(days=day)
+        if dt.datetime.weekday(dateN) == 6 and dateN.day == 1:
+            #dateLst.append( dateN )
+            count += 1
+        day += 1
+    #print(dateLst)
+    return 'Problem 19: quantity of Sundays and 1st day of month is ' + str(count)
 
 def problem26():
     def get_key(d, value):
@@ -123,136 +158,84 @@ def problem26():
                         #print(d, fraction.split( fraction[1] ))
                         fractionDict[d] = len(fraction[1] + fraction.split( fraction[1] )[1])
 
-    print( 'problem 26: value of d which 1/d contains the longest recurring cycle is',
-           textoutput.BOLD_UNDERLINE +
-           str(get_key( fractionDict, max( fractionDict.values( ) ) )) +
-           textoutput.END )
+    # print( 'problem 26: value of d which 1/d contains the longest recurring cycle is',
+    #        textoutput.BOLD_UNDERLINE +
+    #        str(get_key( fractionDict, max( fractionDict.values( ) ) )) +
+    #        textoutput.END )
+    return 'problem 26: value of d which 1/d contains the longest recurring cycle is ' + \
+           str(get_key( fractionDict, max( fractionDict.values( ) ) ))
 
-def problem78_recurtion(circles, i, iter, trigger):
-    if iter == len(circles)+1:
-        # print(circles)
-        return circles.count('*'), iter+1
-    if circles[len(circles) - i - 1] == '*' and  circles[len(circles) - i] == '*':
-        circles = circles[0:len(circles) - i] + [' '] + circles[len(circles) - i: len(circles)]
-        iter += 1
-        if iter == len( circles )-1:
-            # print(circles)
-            return circles.count('*'), iter
-        # print(circles, iter, i, 'two circles')
-        return problem78_recurtion(circles, i, iter, trigger)
-    elif circles[len(circles) - i - 1] == ' ' and circles[len(circles) - i] == '*' and circles[len(circles) - i-3] == '*' and trigger[0] == 0:
-        circles[len( circles ) - i - 1] = '*'
-        circles[len( circles ) - i - 2] = ' '
-        iter += 1
-        # print(circles, iter, i, 'space and circle')
-        if i > 1:
-            trigger[0] = 1
-            trigger[1] = i
-            i -= 2
-        return problem78_recurtion(circles, i, iter, trigger)
-    elif circles[len(circles) - i - 1] == ' ' and circles[len(circles) - i] == '*' and circles[len(circles) - i-3] == '*' and trigger[0] == 1:
-        circles = circles[0:len( circles ) - trigger[1]] + [' '] + circles[len(circles) - trigger[1]: len(circles)]
-        iter += 1
-        # print(circles, iter, i, 'space and circle and trigger[0] == 1')
-        trigger[0] = 0
-        trigger[1] = 1
-        if i > 1:
-            i = 1
-        return problem78_recurtion(circles, i, iter, trigger)
-    else:
-        if iter + 1 == len(circles):
-            # print(circles)
-            return circles.count('*'), iter+1
-        i += 1
-        if len( circles ) - i == 3:
-            circles = ['*'] + [' '] + circles[1: len( circles )]
-            # print(circles)
-            return circles.count('*'), iter+1
-        return problem78_recurtion(circles, i, iter, trigger)
+def problem36():
+    integerNum = 1
+    concatProd = ''
+    concatProdLst = []
+    for num in range(1, 400):
+        while len(concatProd) < 10:
+            if len(concatProd) == 9:
+                print(concatProd)
+                concatProdLst.append(int(concatProd))
+            pandigit = num * integerNum
+            concatProd += str(pandigit)
+            integerNum += 1
+        integerNum = 1
+        concatProd = ''
+    print(max(concatProdLst))
 
-def problem78(circles):
-    rec = []
-    count = len(circles) - 1
-    flag = True
-    iter = 0
-    trigger = [0,1]
-    # print(circles)
-    while flag:
-        #print('iter', iter, len(circles), count)
-        if iter == len( circles ) + 2:
-            return circles.count('*'), iter + 1
-        if circles[count - 1] == '*' and circles[count] == '*':
-            circles = circles[:count] + [' '] + circles[count: len( circles )]
-            iter += 1
-            # print(circles, count,'**')
-            count += 2
-            if iter == len( circles ) - 2:
-                return circles.count('*'), iter + 1
-        elif circles[count - 3] == '*' and circles[count - 1] == ' ' and circles[count] == '*' and trigger[0] == 0:
-            if len(circles) - iter == 3:
-                circles = ['*'] + [' '] + circles[1: len( circles )]
-                # print( circles )
-                iter += 1
-                return circles.count('*'), iter + 1
-            else:
-                circles[count - 1] = '*'
-                circles[count - 2] = ' '
-                iter += 1
-                # print( circles, count, iter, ' here')
-            # if count > 1:
-            #     trigger[0] = 1
-            #     trigger[1] = count
-            #     count += 1
-            count += 1
-        # elif  circles[count - 3] == '*' and circles[count - 1] == ' ' and circles[count] == '*' and trigger[0] == 1:
-        #     circles = circles[0:len(circles) - trigger[1]] + [' '] + ['*'] + circles[len( circles ) - trigger[1]+2: len( circles )]
-        #     iter += 1
-        #     print(circles, count, 'trigger0=1')
-        #     trigger[0] = 0
-        #     trigger[1] = 1
-        #     count = len(circles) - 1
-        else:
-            pass
-            # if iter + 1 == len( circles ):
-            #     return circles, iter
-            # if len( circles ) - count == 3:
-            #     circles = ['*'] + [' '] + circles[1: len( circles )]
-            #     print(circles)
-            #     iter += 1
-            #     return circles, iter
-        count -= 1
-        if count == 0:
-            flag = False
+def problem50():
+    num = 9
+    prime = list( range(1, num + 1 ) )
+    mod = 2
+    tmp = []
+    index = 0
+    while mod**2 < max(prime):
+        for i in prime:
+            if i % mod != 0 or i == mod:
+                tmp.append(i)
+        prime = tmp
+        tmp = []
+        index += 1
+        mod = prime[index]
+    prime.remove(1)
+    sum = 0
+    sumLst = []
+    sumDict = {}
+    print(prime)
+    prev = []
+    for i in prime:
+        sum += i
+        sumDict[sum] = prev + [i]
+        prev = sumDict[sum]
+    for i in range(1,len(prime)):
+        prev = []
+        sum = 0
+        for j in prime[i:len(prime)]:
+            sum += j
+            sumDict[sum] = prev + [j]
+            prev = sumDict[sum]
+            print(sumDict)
+    for key in sumDict.keys():
+        if key in prime:
+            print(key, sumDict[key])
 
-
-def problem78_1():
-    table = np.zeros((3,3))
-    print( table )
-    y = table.shape[0]
-    x = table.shape[1]
-    i = table.shape[0] - 1
-    while i >= 0:
-        print(i)
-                        
-        i -= 1
 
 def problemTasks(n):
     return eval('problem' + str(n) + '()')
 
-
 #FLASK REST
-app = Flask(__name__)
-api = Api(app)
-api.add_resource(Problem, '/<int:problem>')
-if __name__ == '__main__':
-    app.run(debug=True, port=80)
-
+# app = Flask(__name__)
+# api = Api(app)
+# api.add_resource(Problem, '/<int:problem>')
 # if __name__ == '__main__':
+#     app.run(debug=True, port=80)
+
+if __name__ == '__main__':
     # problem1()
     # problem2()
-    # findPrimeFactors( 600851475143 )
+    # print(problem3( 1000 ))
     # problem4()
-    # time-spending task
-    # problem7(150000)
+    # print(problem7())
+    # print(problem19())
     # problem26()
-    # problem78_1()
+    #problem36()
+    problem50()
+
