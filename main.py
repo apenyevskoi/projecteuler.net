@@ -35,11 +35,12 @@ def problem2():
             lst.append(lst[num-1] + lst[num])
             num += 1
         else:
-            return 'problem 2: sum of Fibonacci elements which last element do not exceed 4mln is' + \
+            return 'problem 2: sum of Fibonacci elements which last element do not exceed 4mln is ' + \
                           textoutput.BOLD_UNDERLINE + \
                           str( sum(lst) ) + textoutput.END
 
-def problem3(num):
+def problem3():
+    num = 600851475143
     primeFactors = []
     test = 2
     #num = 100
@@ -166,60 +167,22 @@ def problem26():
     return 'problem 26: value of d which 1/d contains the longest recurring cycle is ' + \
            str(get_key( fractionDict, max( fractionDict.values( ) ) ))
 
-def problem36():
+def problem38():
     integerNum = 1
     concatProd = ''
     concatProdLst = []
     for num in range(1, 400):
         while len(concatProd) < 10:
             if len(concatProd) == 9:
-                print(concatProd)
                 concatProdLst.append(int(concatProd))
             pandigit = num * integerNum
             concatProd += str(pandigit)
             integerNum += 1
         integerNum = 1
         concatProd = ''
-    print(max(concatProdLst))
-
-def problem50_withoutThread(prev, stepThread):
-    #ev.wait()
-    print(prev, stepThread)
-    num = 1000
-    prime = list( range(1, num + 1 ) )
-    mod = 2
-    tmp = []
-    index = 0
-    while mod**2 < max(prime):
-        for i in prime:
-            if i % mod != 0 or i == mod:
-                tmp.append(i)
-        prime = tmp
-        tmp = []
-        index += 1
-        mod = prime[index]
-    prime.remove(1)
-    prime = np.array(prime)
-    save = [1,[1]]
-    print(len(prime) * len(prime))
-    count = 0
-    for i in range(0,len(prime)):
-        # print('i = ',i, save[0])
-        for j in range(0,len(prime)):
-            lst = prime[i:j:1]
-            sum = prime[i:j:1].sum()
-            if sum > 1000000:
-                # print('j = ',j)
-                break
-            if sum in prime and len(lst) > len(save[1]):
-                save[0] = sum
-                save[1] = lst
-        # if i in [100, 1000, 5000, 10000, 12000, 15000]:
-        #     print(save)
-    print(save[0], len(save[1]), save[1])
+    return 'Problem 36: ' + str(max(concatProdLst))
 
 def multithreadsProblem50(num, prev, stepThread):
-    #num = 1000
     prime = list( range(1, num + 1 ) )
     mod = 2
     tmp = []
@@ -244,7 +207,6 @@ def multithreadsProblem50(num, prev, stepThread):
             if sum in prime and len(lst) > len(save[1]):
                 save[0] = sum
                 save[1] = lst
-    #print(save[0], len(save[1]), flush=True)
     return save[0]
 
 def problem50():
@@ -266,7 +228,7 @@ def problem50():
     pool = ThreadPool(processes=50)
     async_one = pool.apply_async( multithreadsProblem50, (LIMIT, 0, int( len( prime ) )) )
     ret = async_one.get( )
-    return ret
+    return 'Problem 50: ' + str(ret)
 
 
 def problemTasks(n):
@@ -280,16 +242,21 @@ def problemTasks(n):
 #     app.run(debug=True, port=80)
 
 if __name__ == '__main__':
-    # problem1()
-    # problem2()
-    # print(problem3( 1000 ))
-    # problem4()
-    # print(problem7())
-    # print(problem19())
-    # problem26()
-    #problem36()
-
+    print(problem1())
+    print(problem2())
+    print(problem3())
+    print(problem4())
+    print(problem7())
+    print(problem19())
+    print(problem26())
+    print(problem38())
     print(problem50())
+    # time0 = time.time()
+    # print(problem50())
+    # print('Threading:', time0 - time.time())
+    # time0 = time.time( )
+    # problem50_withoutThread( )
+    # print( 'Threading:', time0 - time.time( ) )
 
 
 
