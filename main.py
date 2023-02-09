@@ -288,12 +288,8 @@ if __name__ == '__main__':
     # print(problem19())
     # problem26()
     #problem36()
-    time0 = time.time()
+
     print(problem50())
-    print('Threading:', time0 - time.time())
-    time0 = time.time( )
-    problem50_withoutThread( )
-    print( 'Threading:', time0 - time.time( ) )
 
 
 
