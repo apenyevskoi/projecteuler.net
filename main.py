@@ -3,8 +3,9 @@ import numpy as np
 import datetime as dt
 from flask import Flask
 import matplotlib.pyplot as plt
+from multiprocessing import Process
+from multiprocessing.pool import ThreadPool
 from flask_restful import Api, Resource, reqparse
-
 
 
 problemNums = range(1,100,1)
@@ -181,8 +182,10 @@ def problem36():
         concatProd = ''
     print(max(concatProdLst))
 
-def problem50():
-    num = 9
+def problem50_withoutThread(prev, stepThread):
+    #ev.wait()
+    print(prev, stepThread)
+    num = 1000
     prime = list( range(1, num + 1 ) )
     mod = 2
     tmp = []
@@ -196,26 +199,74 @@ def problem50():
         index += 1
         mod = prime[index]
     prime.remove(1)
-    sum = 0
-    sumLst = []
-    sumDict = {}
-    print(prime)
-    prev = []
-    for i in prime:
-        sum += i
-        sumDict[sum] = prev + [i]
-        prev = sumDict[sum]
-    for i in range(1,len(prime)):
-        prev = []
-        sum = 0
-        for j in prime[i:len(prime)]:
-            sum += j
-            sumDict[sum] = prev + [j]
-            prev = sumDict[sum]
-            print(sumDict)
-    for key in sumDict.keys():
-        if key in prime:
-            print(key, sumDict[key])
+    prime = np.array(prime)
+    save = [1,[1]]
+    print(len(prime) * len(prime))
+    count = 0
+    for i in range(0,len(prime)):
+        # print('i = ',i, save[0])
+        for j in range(0,len(prime)):
+            lst = prime[i:j:1]
+            sum = prime[i:j:1].sum()
+            if sum > 1000000:
+                # print('j = ',j)
+                break
+            if sum in prime and len(lst) > len(save[1]):
+                save[0] = sum
+                save[1] = lst
+        # if i in [100, 1000, 5000, 10000, 12000, 15000]:
+        #     print(save)
+    print(save[0], len(save[1]), save[1])
+
+def multithreadsProblem50(num, prev, stepThread):
+    #num = 1000
+    prime = list( range(1, num + 1 ) )
+    mod = 2
+    tmp = []
+    index = 0
+    while mod**2 < max(prime):
+        for i in prime:
+            if i % mod != 0 or i == mod:
+                tmp.append(i)
+        prime = tmp
+        tmp = []
+        index += 1
+        mod = prime[index]
+    prime.remove(1)
+    prime = np.array(prime)
+    save = [1,[1]]
+    for i in range(prev,stepThread):
+        for j in range(i,stepThread):
+            lst = prime[i:j:1]
+            sum = prime[i:j:1].sum()
+            if sum > num:
+                break
+            if sum in prime and len(lst) > len(save[1]):
+                save[0] = sum
+                save[1] = lst
+    #print(save[0], len(save[1]), flush=True)
+    return save[0]
+
+def problem50():
+    LIMIT = 1000000
+    prime = list( range( 1, LIMIT + 1 ) )
+    mod = 2
+    tmp = []
+    index = 0
+    while mod ** 2 < max( prime ):
+        for i in prime:
+            if i % mod != 0 or i == mod:
+                tmp.append( i )
+        prime = tmp
+        tmp = []
+        index += 1
+        mod = prime[index]
+    prime.remove( 1 )
+
+    pool = ThreadPool(processes=50)
+    async_one = pool.apply_async( multithreadsProblem50, (LIMIT, 0, int( len( prime ) )) )
+    ret = async_one.get( )
+    return ret
 
 
 def problemTasks(n):
@@ -237,5 +288,12 @@ if __name__ == '__main__':
     # print(problem19())
     # problem26()
     #problem36()
-    problem50()
+    time0 = time.time()
+    print(problem50())
+    print('Threading:', time0 - time.time())
+    time0 = time.time( )
+    problem50_withoutThread( )
+    print( 'Threading:', time0 - time.time( ) )
+
+
 
