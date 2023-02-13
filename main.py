@@ -337,13 +337,6 @@ if __name__ == '__main__':
     # print(problem26())
     # print(problem38())
     # print(problem50())
-
-    # time0 = time.time()
-    # print(problem50())
-    # print('Threading:', time0 - time.time())
-    # time0 = time.time( )
-    # problem50_withoutThread( )
-    # print( 'Threading:', time0 - time.time( ) )
-    problem60()
+    print(problem60())
 
 
