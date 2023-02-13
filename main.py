@@ -1,8 +1,11 @@
 import time
+import itertools
 import numpy as np
+import pandas as pd
 import datetime as dt
 from flask import Flask
 import matplotlib.pyplot as plt
+from collections import defaultdict
 from multiprocessing import Process
 from multiprocessing.pool import ThreadPool
 from flask_restful import Api, Resource, reqparse
@@ -182,6 +185,7 @@ def problem38():
         concatProd = ''
     return 'Problem 36: ' + str(max(concatProdLst))
 
+#import numpy as np
 def multithreadsProblem50(num, prev, stepThread):
     prime = list( range(1, num + 1 ) )
     mod = 2
@@ -231,6 +235,88 @@ def problem50():
     return 'Problem 50: ' + str(ret)
 
 
+def problem60Multithreading():
+    num = 700000
+    prime = list( range( 1, num + 1 ) )
+    mod = 2
+    tmp = []
+    index = 0
+
+    while mod ** 2 < max( prime ):
+        for i in prime:
+            if i % mod != 0 or i == mod:
+                tmp.append( i )
+        prime = tmp
+        tmp = []
+        index += 1
+        mod = prime[index]
+    for i in [1,2,5]:
+        prime.remove( i )
+
+    lst = []
+    for i in prime[0:30]:
+        lst.append(str(i))
+    pairs = np.empty(0)
+
+    perm_set = itertools.combinations(lst, 3)
+    df = pd.DataFrame(columns=['1','2','3'])
+
+    for i in perm_set:
+        df.loc[len(df)] = i
+
+    tmp = df[::].\
+        apply(
+            lambda row:
+                all( [ num in prime for num in
+                        list(map(int,
+                                 ([elem for j in [np.hstack(
+                                                        (
+                                                            pairs, np.core.defchararray.add( i, np.setdiff1d( row, i ) )
+                                                        )
+                                                    )
+                                                for i in row] for elem in j])
+                                 )
+                        )
+                ]
+                ),
+            axis=1 )
+    # print(df[tmp == True].astype('int64'))
+    # print( df[tmp == True].astype( 'int64' ).sum(axis=1) )
+    print('Problem 60: (3 primes) ' + str(df[tmp == True].astype( 'int64' ).sum( axis=1 ).min()))
+
+    #ver2 can count of 4 primes rather fast but not 5 primes
+    lst = []
+    for i in prime[0:121]:
+        lst.append(str(i))
+    pairs = np.empty(0)
+    perm_set = itertools.combinations(lst, 4)
+    count = 0
+    iList = []
+
+    for i in perm_set:
+        for j in i:
+            arr1 = np.setdiff1d(i,j)
+            pairs = np.hstack( (pairs, np.core.defchararray.add(j, arr1)) )
+            pairs = np.hstack( (pairs, np.core.defchararray.add(arr1, j)) )
+            pairs = list(np.array(pairs, dtype=int))
+            if all( [ num in prime for num in pairs ] ):
+                count += 1
+            else:
+                break
+            pairs = np.empty( 0 )
+        if count == 4:
+            iList.append(i)
+            return 'Problem 60: (4 primes) ' + str(i) + ' ' + str(sum(list(map(int, list(i)))))
+        count = 0
+        pairs = np.empty(0)
+
+
+def problem60():
+    pool = ThreadPool( processes=5 )
+    async_one = pool.apply_async(problem60Multithreading)
+    result = async_one.get()
+    print(result)
+
 def problemTasks(n):
     return eval('problem' + str(n) + '()')
 
@@ -242,21 +328,22 @@ def problemTasks(n):
 #     app.run(debug=True, port=80)
 
 if __name__ == '__main__':
-    print(problem1())
-    print(problem2())
-    print(problem3())
-    print(problem4())
-    print(problem7())
-    print(problem19())
-    print(problem26())
-    print(problem38())
-    print(problem50())
+    # print(problem1())
+    # print(problem2())
+    # print(problem3())
+    # print(problem4())
+    # print(problem7())
+    # print(problem19())
+    # print(problem26())
+    # print(problem38())
+    # print(problem50())
+
     # time0 = time.time()
     # print(problem50())
     # print('Threading:', time0 - time.time())
     # time0 = time.time( )
     # problem50_withoutThread( )
     # print( 'Threading:', time0 - time.time( ) )
-
+    problem60()
 
 
